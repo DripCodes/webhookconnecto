@@ -47,18 +47,13 @@ for unique_file in unique_files:
 
     last_record = files[0]
     last_record_author = last_record['author']
-    # print('last person to touch file is: ', last_record['author'])
-    # print("the action was: ", last_record['action'])
     last_record_date = datetime.fromisoformat(last_record['timestamp'])
     if len(files) > 1:
         secondary_record_date = datetime.fromisoformat(files[1]['timestamp'])
         delta = last_record_date - secondary_record_date
         differing_days = delta.days
-        # print(differing_days)
 
-    # number_of_updates = collection.find({"filename": unique_file, "author": last_record_author}).count_documents
     number_of_updates = collection.count_documents({"filename": unique_file, "author": last_record_author})
-   # print(number_of_updates)
 
 
     # datetime_object0 = datetime.strptime(files[0]['timestamp'], '%Y-%m-%dT%H:%M:%S%z')
@@ -68,18 +63,10 @@ for unique_file in unique_files:
 
     if differing_days >= 1 or number_of_updates <= 1:
         print("Suspicious activity detected in the file " + last_record['filename'])
-        # with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-        #     print('Test email')
         date_time = last_record['timestamp']
-        # print(date_time)
         pattern = '%Y-%m-%dT%H:%M:%S%z'
         last_record['timestamp'] = int(time.mktime(time.strptime(date_time, pattern)))
-        # print(last_record['timestamp'])
-        #     server.login(sender_email, password)
-        #     msg = MIMEMultipart("alternative")
-        #     msg['Subject'] = 'Suspicious activity'
-        #     msg['From'] = sender_email
-        #     msg['To'] = receiver_email
+
             # body = f"Suspicious activity detected in the file {last_record['filename']}. Last touched by {last_record['author']}, action: {last_record['action']}"
         res = es.update(
             index='test_index2',
